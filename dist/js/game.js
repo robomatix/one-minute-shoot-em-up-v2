@@ -88,6 +88,11 @@ Menu.prototype = {
         this.pitchText4 = this.game.add.bitmapText(220, 180, 'fontSilkscreen', pitchTextString4, 18);
         this.pitchText5 = this.game.add.bitmapText(125, 200, 'fontSilkscreen', pitchTextString5, 56);
 
+        // Hero
+        this.hero = this.game.add.sprite(25,470,'hero');
+        this.hero.anchor.setTo(0.5, 0.5);
+        this.game.add.tween(this.hero).to({x:470}, 5000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
+
 
 
         this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'yeoman');
@@ -153,7 +158,7 @@ Preload.prototype = {
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
         this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
         //spritesheet
-        this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 480);
+        this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
 
     },
     create: function () {
