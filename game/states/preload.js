@@ -11,7 +11,10 @@ Preload.prototype = {
 
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.asset);
+        //bitmapFont
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
+        this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
+        //spritesheet
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 480);
 
     },

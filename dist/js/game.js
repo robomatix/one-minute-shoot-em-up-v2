@@ -74,7 +74,21 @@ Menu.prototype = {
 
 
         // Title
-        this.titleText = this.game.add.bitmapText(20, 10, 'fontKubasta', 'The One Minute Shoot \'Em Up', 48);
+        this.titleText = this.game.add.bitmapText(60, 10, 'fontSilkscreen', 'The One Minute Shoot \'Em Up', 18);
+
+        // Pitch
+        var pitchTextString1 = "one minute";
+        var pitchTextString2 = "to";
+        var pitchTextString3 = "save";
+        var pitchTextString4 = "the";
+        var pitchTextString5 = "world !!!";
+        this.pitchText1 = this.game.add.bitmapText(20, 58, 'fontSilkscreen',pitchTextString1, 56);
+        this.pitchText2 = this.game.add.bitmapText(230, 110, 'fontSilkscreen',pitchTextString2, 18);
+        this.pitchText3 = this.game.add.bitmapText(155, 130, 'fontSilkscreen',pitchTextString3, 56);
+        this.pitchText4 = this.game.add.bitmapText(220, 180, 'fontSilkscreen',pitchTextString4, 18);
+        this.pitchText5 = this.game.add.bitmapText(105, 200, 'fontSilkscreen',pitchTextString5, 56);
+
+
 
         this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'yeoman');
         this.sprite.anchor.setTo(0.5, 0.5);
@@ -135,7 +149,10 @@ Preload.prototype = {
 
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.asset);
+        //bitmapFont
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
+        this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
+        //spritesheet
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 480);
 
     },
