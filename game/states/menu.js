@@ -34,11 +34,12 @@ Menu.prototype = {
         this.game.add.tween(this.pitchText6).to({x: 370}, 1000).easing(Phaser.Easing.Bounce.Out).delay(6000).start();
 
         // Hero
-        this.hero = this.game.add.sprite(520, 470, 'hero');
+        this.hero = this.game.add.sprite(this.game.world.centerX, -20, 'hero');
         this.hero.anchor.setTo(0.5, 0.5);
         this.game.add.tween(this.hero)
-            .to({ x: 25 }, 5000, Phaser.Easing.Linear.NONE, true, 7000, 0, false)
-            .to({x: 470}, 5000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
+            .to({ y: 470 }, 2000, Phaser.Easing.Bounce.Out, true, 7000, 0, false)
+            .to({x: 470}, 3500, Phaser.Easing.Linear.NONE, true, 0, 0, false)
+            .to({x: 25}, 7000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
         //http://www.html5gamedevs.com/topic/1651-tween-oncompletecallback/
 
         this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play "Click The Yeoman Logo"', { font: '16px Arial', fill: '#ffffff', align: 'center'});
