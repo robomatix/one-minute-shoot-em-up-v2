@@ -72,12 +72,16 @@ Menu.prototype = {
 
   },
   create: function() {
-    var style = { font: '65px Arial', fill: '#ffffff', align: 'center'};
+
+
+      // Title
+      //var titleStyle = { font: '36px Arial', fill: '#ffffff', align: 'center'};
+      //this.titleText = this.game.add.text(this.game.world.centerX, 30, 'The One Minute Shoot \'Em Up', titleStyle);
+      //this.titleText.anchor.setTo(0.5, 0.5);
+      this.scoreText = this.game.add.bitmapText(20, 10, 'fontKubasta','The One Minute Shoot \'Em Up', 48);
+
     this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'yeoman');
     this.sprite.anchor.setTo(0.5, 0.5);
-
-    this.titleText = this.game.add.text(this.game.world.centerX, 300, '\'Allo, \'Allo!', style);
-    this.titleText.anchor.setTo(0.5, 0.5);
 
     this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play "Click The Yeoman Logo"', { font: '16px Arial', fill: '#ffffff', align: 'center'});
     this.instructionsText.anchor.setTo(0.5, 0.5);
@@ -122,7 +126,6 @@ module.exports = Menu;
   
   module.exports = Play;
 },{}],6:[function(require,module,exports){
-
 'use strict';
 function Preload() {
   this.asset = null;
@@ -136,7 +139,8 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-    this.load.image('yeoman', 'assets/yeoman-logo.png');
+    this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
+    this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png',40,480);
 
   },
   create: function() {

@@ -1,4 +1,3 @@
-
 'use strict';
 function Preload() {
   this.asset = null;
@@ -12,7 +11,8 @@ Preload.prototype = {
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
     this.load.setPreloadSprite(this.asset);
-    this.load.image('yeoman', 'assets/yeoman-logo.png');
+    this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
+    this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png',40,480);
 
   },
   create: function() {
