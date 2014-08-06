@@ -82,11 +82,11 @@ Menu.prototype = {
         var pitchTextString3 = "save";
         var pitchTextString4 = "the";
         var pitchTextString5 = "world !!!";
-        this.pitchText1 = this.game.add.bitmapText(20, 58, 'fontSilkscreen',pitchTextString1, 56);
-        this.pitchText2 = this.game.add.bitmapText(230, 110, 'fontSilkscreen',pitchTextString2, 18);
-        this.pitchText3 = this.game.add.bitmapText(155, 130, 'fontSilkscreen',pitchTextString3, 56);
-        this.pitchText4 = this.game.add.bitmapText(220, 180, 'fontSilkscreen',pitchTextString4, 18);
-        this.pitchText5 = this.game.add.bitmapText(105, 200, 'fontSilkscreen',pitchTextString5, 56);
+        this.pitchText1 = this.game.add.bitmapText(20, 58, 'fontSilkscreen', pitchTextString1, 56);
+        this.pitchText2 = this.game.add.bitmapText(230, 110, 'fontSilkscreen', pitchTextString2, 18);
+        this.pitchText3 = this.game.add.bitmapText(155, 130, 'fontSilkscreen', pitchTextString3, 56);
+        this.pitchText4 = this.game.add.bitmapText(220, 180, 'fontSilkscreen', pitchTextString4, 18);
+        this.pitchText5 = this.game.add.bitmapText(125, 200, 'fontSilkscreen', pitchTextString5, 56);
 
 
 
