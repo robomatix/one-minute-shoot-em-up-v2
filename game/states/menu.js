@@ -10,7 +10,7 @@ Menu.prototype = {
 
 
         // Title
-        this.scoreText = this.game.add.bitmapText(20, 10, 'fontKubasta', 'The One Minute Shoot \'Em Up', 48);
+        this.titleText = this.game.add.bitmapText(20, 10, 'fontKubasta', 'The One Minute Shoot \'Em Up', 48);
 
         this.sprite = this.game.add.sprite(this.game.world.centerX, 138, 'yeoman');
         this.sprite.anchor.setTo(0.5, 0.5);
