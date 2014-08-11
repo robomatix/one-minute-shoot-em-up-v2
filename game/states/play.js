@@ -45,7 +45,7 @@ Play.prototype = {
         this.heroSpeedX = 88;
 
         // Game variables
-        this.posXMousePointerPrevious =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
 
 
     },
@@ -60,8 +60,8 @@ Play.prototype = {
     movePlayer: function () {
 
         // Get some infos
-        this.posXMousePointer =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
-        this.posXPlayer =  Phaser.Math.roundTo(this.player.x);
+        this.posXMousePointer = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.posXPlayer = Phaser.Math.roundTo(this.player.x);
 
         // The mouse has moved
         if (this.posXMousePointerPrevious != this.posXMousePointer) {
@@ -79,21 +79,16 @@ Play.prototype = {
 
         }
 
-        // Register the position of the mouse
-this.posXMousePointerPrevious = this.posXMousePointer;
+        // Register the position of the mouse to use it as a reference for the next update
+        this.posXMousePointerPrevious = this.posXMousePointer;
         /*
 
-        // If neither key are pressed
-        else {
-            // Stop the player
-            this.player.body.velocity.x = 0;
-        }
-        */
-
-        /* With the pointer of the mouse */
-
-
-
+         // If neither key are pressed
+         else {
+         // Stop the player
+         this.player.body.velocity.x = 0;
+         }
+         */
 
     }
 
