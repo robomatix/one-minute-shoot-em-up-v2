@@ -30,14 +30,48 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
+        /* Initialise some variables
+         *********************************************/
+
+
+        // Use cursor keys
+        this.cursor = this.game.input.keyboard.createCursorKeys();
+        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
+
+        // Hero Variables
+        this.heroSpeedX = 88;
+
 
     },
+
     update: function () {
 
+        // Move the player when the arrow keys are pressed
+        this.movePlayer();
+
     },
-    clickListener: function () {
-        this.game.state.start('gameover');
+
+    movePlayer: function () {
+
+        // If the left key is pressed
+        if (this.cursor.left.isDown) {
+            // Move the player to the left
+            this.player.body.velocity.x = -this.heroSpeedX;
+        }
+
+        // If the right key is pressed
+        else if (this.cursor.right.isDown) {
+            // Move the player to the right
+            this.player.body.velocity.x = this.heroSpeedX;
+        }
+
+        // If neither key are pressed
+        else {
+            // Stop the player
+            this.player.body.velocity.x = 0;
+        }
     }
+
 };
 
 module.exports = Play;
