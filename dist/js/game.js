@@ -128,13 +128,30 @@ Play.prototype = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
         /* Add all the sprites/groups to the game
-        *********************************************/
+         *********************************************/
 
         // Add the player at the bottom of the screen
         this.player = this.game.add.sprite(this.game.world.centerX, 470, 'hero');
         this.game.physics.arcade.enable(this.player);
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
+
+
+        /* Initialise emitters
+         **********************************************/
+
+        // Add a starfield to the background of the game
+        var startEmitter = this.game.add.emitter(this.game.world.centerX, 0, 200);
+        startEmitter.width = this.game.world.width;
+        startEmitter.makeParticles('pixel');
+        startEmitter.setYSpeed(18, 88);
+        startEmitter.setXSpeed(0, 0);
+        startEmitter.minParticleScale = 0.1;
+        startEmitter.maxParticleScale = 0.7;
+        startEmitter.minRotation = 0;
+        startEmitter.maxRotation = 0;
+        startEmitter.gravity = 0;
+        startEmitter.start(false, 20000, 100, 0);
 
 
     },
@@ -156,15 +173,21 @@ function Preload() {
 
 Preload.prototype = {
     preload: function () {
+
         this.asset = this.add.sprite(this.width / 2, this.height / 2, 'preloader');
         this.asset.anchor.setTo(0.5, 0.5);
 
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.asset);
-        //bitmapFont
+
+        //BitmapFont
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
         this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
-        //spritesheet
+
+        // Images
+        this.game.load.image('pixel', 'assets/pixel.png');
+
+        //Spritesheets
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
 
     },
@@ -172,12 +195,16 @@ Preload.prototype = {
         this.asset.cropEnabled = false;
     },
     update: function () {
+
         if (!!this.ready) {
             this.game.state.start('menu');
         }
+
     },
     onLoadComplete: function () {
+
         this.ready = true;
+
     }
 };
 
