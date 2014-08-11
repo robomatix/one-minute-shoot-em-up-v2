@@ -106,7 +106,7 @@ Menu.prototype = {
             .to({x: 25}, 7000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
         //http://www.html5gamedevs.com/topic/1651-tween-oncompletecallback/
 
-        this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play "Click The Yeoman Logo"', { font: '16px Arial', fill: '#ffffff', align: 'center'});
+        this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', { font: '16px Arial', fill: '#ffffff', align: 'center'});
         this.instructionsText.anchor.setTo(0.5, 0.5);
 
     },
@@ -126,16 +126,17 @@ function Play() {
 Play.prototype = {
     create: function () {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.sprite = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'yeoman');
-        this.sprite.inputEnabled = true;
 
-        this.game.physics.arcade.enable(this.sprite);
-        this.sprite.body.collideWorldBounds = true;
-        this.sprite.body.bounce.setTo(1, 1);
-        this.sprite.body.velocity.x = this.game.rnd.integerInRange(-500, 500);
-        this.sprite.body.velocity.y = this.game.rnd.integerInRange(-500, 500);
+        /* Add all the sprites/groups to the game
+        *********************************************/
 
-        this.sprite.events.onInputDown.add(this.clickListener, this);
+        // Add the player at the bottom of the screen
+        this.player = this.game.add.sprite(this.game.world.centerX, 470, 'hero');
+        this.game.physics.arcade.enable(this.player);
+        this.player.anchor.setTo(0.5, 0.5);
+        this.player.body.collideWorldBounds = true;
+
+
     },
     update: function () {
 

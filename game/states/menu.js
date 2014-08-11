@@ -42,7 +42,7 @@ Menu.prototype = {
             .to({x: 25}, 7000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
         //http://www.html5gamedevs.com/topic/1651-tween-oncompletecallback/
 
-        this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play "Click The Yeoman Logo"', { font: '16px Arial', fill: '#ffffff', align: 'center'});
+        this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', { font: '16px Arial', fill: '#ffffff', align: 'center'});
         this.instructionsText.anchor.setTo(0.5, 0.5);
 
     },
