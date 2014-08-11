@@ -125,7 +125,9 @@ function Play() {
 }
 Play.prototype = {
     create: function () {
+
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
 
         /* Initialise emitters
          **********************************************/
@@ -143,6 +145,7 @@ Play.prototype = {
         startEmitter.gravity = 0;
         startEmitter.start(false, 20000, 100, 0);
 
+
         /* Add all the sprites/groups to the game
          *********************************************/
 
@@ -152,9 +155,9 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
+
         /* Initialise some variables
          *********************************************/
-
 
         // Use cursor keys
         this.cursor = this.game.input.keyboard.createCursorKeys();
@@ -163,35 +166,57 @@ Play.prototype = {
         // Hero Variables
         this.heroSpeedX = 88;
 
+        // Game variables
+        this.posXMousePointerPrevious =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
+
 
     },
 
     update: function () {
 
-        // Move the player when the arrow keys are pressed
+        // Move the player when the mouse is moved
         this.movePlayer();
 
     },
 
     movePlayer: function () {
 
-        // If the left key is pressed
-        if (this.cursor.left.isDown) {
-            // Move the player to the left
-            this.player.body.velocity.x = -this.heroSpeedX;
+        // Get some infos
+        this.posXMousePointer =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.posXPlayer =  Phaser.Math.roundTo(this.player.x);
+
+        // The mouse has moved
+        if (this.posXMousePointerPrevious != this.posXMousePointer) {
+
+            // To go the left
+            if (this.posXMousePointer < this.posXPlayer) {
+                // Move the player to the left
+                this.player.body.velocity.x = -this.heroSpeedX;
+            }
+            // To go to the right
+            else if (this.posXMousePointer > this.posXPlayer) {
+                // Move the player to the right
+                this.player.body.velocity.x = this.heroSpeedX;
+            }
+
         }
 
-        // If the right key is pressed
-        else if (this.cursor.right.isDown) {
-            // Move the player to the right
-            this.player.body.velocity.x = this.heroSpeedX;
-        }
+        // Register the position of the mouse
+this.posXMousePointerPrevious = this.posXMousePointer;
+        /*
 
         // If neither key are pressed
         else {
             // Stop the player
             this.player.body.velocity.x = 0;
         }
+        */
+
+        /* With the pointer of the mouse */
+
+
+
+
     }
 
 };
