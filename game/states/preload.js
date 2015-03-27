@@ -13,14 +13,15 @@ Preload.prototype = {
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.asset);
 
-        //BitmapFont
+        // BitmapFont
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
         this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
 
         // Images
         this.game.load.image('pixel', 'assets/pixel.png');
+        this.game.load.image('bulletH1', 'assets/bullet-hero-1.png');
 
-        //Spritesheets
+        // Spritesheets
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
 
     },

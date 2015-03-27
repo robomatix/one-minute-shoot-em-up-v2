@@ -15,7 +15,70 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":2,"./states/gameover":3,"./states/menu":4,"./states/play":5,"./states/preload":6}],2:[function(require,module,exports){
+},{"./states/boot":4,"./states/gameover":5,"./states/menu":6,"./states/play":7,"./states/preload":8}],2:[function(require,module,exports){
+'use strict';
+
+var BulletH1;
+
+BulletH1 = function(game, x, y, frame) {
+  Phaser.Sprite.call(this, game, x, y, 'bulletH1', frame);
+
+    // Add physic body
+    this.game.physics.arcade.enableBody(this);
+
+    // Kill the sprite if out of the world
+    this.checkWorldBounds = true;
+    this.outOfBoundsKill = true;
+
+    // Init the bullet
+    this.anchor.setTo(0.5, 1);
+    this.body.velocity.y = -400;
+
+};
+
+BulletH1.prototype = Object.create(Phaser.Sprite.prototype);
+BulletH1.prototype.constructor = BulletH1;
+
+BulletH1.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+BulletH1.prototype.resetBulletH1 = function (x, y) {
+
+  this.x = x;
+  this.y = y;
+  this.exists = true;
+
+}
+module.exports = BulletH1;
+
+},{}],3:[function(require,module,exports){
+'use strict';
+
+
+
+
+var BulletH1Group;
+
+BulletH1Group = function(game, parent) {
+    Phaser.Group.call(this, game, parent);
+
+
+};
+
+BulletH1Group.prototype = Object.create(Phaser.Group.prototype);
+BulletH1Group.prototype.constructor = BulletH1Group;
+
+BulletH1Group.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+
+module.exports = BulletH1Group;
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 function Boot() {
@@ -33,7 +96,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 function GameOver() {
 }
@@ -61,7 +124,7 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 function Menu() {
 }
@@ -119,8 +182,13 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
+
+// Prefabs
+var bulletH1Group = require('../prefabs/bulletH1Group');
+var bulletH1 = require('../prefabs/bulletH1');
+
 function Play() {
 }
 Play.prototype = {
@@ -143,7 +211,7 @@ Play.prototype = {
         startEmitter.minRotation = 0;
         startEmitter.maxRotation = 0;
         startEmitter.gravity = 0;
-        startEmitter.start(false, 20000, 100, 0);
+        startEmitter.start(false, 18000, 100, 0);
 
 
         /* Add all the sprites/groups to the game
@@ -155,19 +223,21 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
+        // Create the bullet group
+        this.bulletH1Group = new bulletH1Group(this.game);
+
 
         /* Initialise some variables
          *********************************************/
-
-        // Use cursor keys
-        this.cursor = this.game.input.keyboard.createCursorKeys();
-        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
 
         // Hero Variables
         this.heroSpeedX = 88;
 
         // Game variables
-        this.posXMousePointerPrevious =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.nextBullet = 0;
+        this.timeBullet = 188;
+
 
 
     },
@@ -177,13 +247,24 @@ Play.prototype = {
         // Move the player when the mouse is moved
         this.movePlayer();
 
+        // Fire a bullet when left click on the mouse
+        // And if the previous bullet was emitted enough time ago
+        if (this.game.input.activePointer.isDown && this.game.time.now > this.nextBullet)
+        {
+            // Reset the timer
+            this.nextBullet = this.game.time.now + this.timeBullet;
+
+            this.playerFire();
+        }
+
+
     },
 
     movePlayer: function () {
 
         // Get some infos
-        this.posXMousePointer =  Phaser.Math.roundTo(this.game.input.mousePointer.x);
-        this.posXPlayer =  Phaser.Math.roundTo(this.player.x);
+        this.posXMousePointer = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.posXPlayer = Phaser.Math.roundTo(this.player.x);
 
         // The mouse has moved
         if (this.posXMousePointerPrevious != this.posXMousePointer) {
@@ -201,28 +282,50 @@ Play.prototype = {
 
         }
 
-        // Register the position of the mouse
-this.posXMousePointerPrevious = this.posXMousePointer;
+        // Register the position of the mouse to use it as a reference for the next update
+        this.posXMousePointerPrevious = this.posXMousePointer;
         /*
 
-        // If neither key are pressed
-        else {
-            // Stop the player
-            this.player.body.velocity.x = 0;
+         // If neither key are pressed
+         else {
+         // Stop the player
+         this.player.body.velocity.x = 0;
+         }
+         */
+
+
+    },
+
+    fireBullet: function (x,y) {
+
+        // Retrieve a bullet from the bullets group
+        var bullet = this.bulletH1Group.getFirstExists(false);
+        if (!bullet) {
+          var bullet = new bulletH1(this.game, 250, 250);
+          this.bulletH1Group.add(bullet);
         }
-        */
+        // Init the bullet
+        bullet.resetBulletH1(x, y);
 
-        /* With the pointer of the mouse */
+    },
 
+    playerFire: function () {
 
+      var y= this.player.y - this.player.height/2;
+      var x = this.player.x;
+        // Create one bullet
+        this.fireBullet(x,y);
 
-
+        // Play sound with small volume
+        //this.bulletSound.volume = 0.5;
+        //this.bulletSound.play();
     }
 
 };
 
 module.exports = Play;
-},{}],6:[function(require,module,exports){
+
+},{"../prefabs/bulletH1":2,"../prefabs/bulletH1Group":3}],8:[function(require,module,exports){
 'use strict';
 function Preload() {
     this.asset = null;
@@ -238,14 +341,15 @@ Preload.prototype = {
         this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
         this.load.setPreloadSprite(this.asset);
 
-        //BitmapFont
+        // BitmapFont
         this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
         this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
 
         // Images
         this.game.load.image('pixel', 'assets/pixel.png');
+        this.game.load.image('bulletH1', 'assets/bullet-hero-1.png');
 
-        //Spritesheets
+        // Spritesheets
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
 
     },

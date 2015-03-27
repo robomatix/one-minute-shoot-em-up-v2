@@ -1,4 +1,9 @@
 'use strict';
+
+// Prefabs
+var bulletH1Group = require('../prefabs/bulletH1Group');
+var bulletH1 = require('../prefabs/bulletH1');
+
 function Play() {
 }
 Play.prototype = {
@@ -21,7 +26,7 @@ Play.prototype = {
         startEmitter.minRotation = 0;
         startEmitter.maxRotation = 0;
         startEmitter.gravity = 0;
-        startEmitter.start(false, 20000, 100, 0);
+        startEmitter.start(false, 18000, 100, 0);
 
 
         /* Add all the sprites/groups to the game
@@ -33,19 +38,21 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
+        // Create the bullet group
+        this.bulletH1Group = new bulletH1Group(this.game);
+
 
         /* Initialise some variables
          *********************************************/
-
-        // Use cursor keys
-        this.cursor = this.game.input.keyboard.createCursorKeys();
-        this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.UP, Phaser.Keyboard.DOWN, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
 
         // Hero Variables
         this.heroSpeedX = 88;
 
         // Game variables
         this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+        this.nextBullet = 0;
+        this.timeBullet = 188;
+
 
 
     },
@@ -54,6 +61,17 @@ Play.prototype = {
 
         // Move the player when the mouse is moved
         this.movePlayer();
+
+        // Fire a bullet when left click on the mouse
+        // And if the previous bullet was emitted enough time ago
+        if (this.game.input.activePointer.isDown && this.game.time.now > this.nextBullet)
+        {
+            // Reset the timer
+            this.nextBullet = this.game.time.now + this.timeBullet;
+
+            this.playerFire();
+        }
+
 
     },
 
@@ -90,6 +108,32 @@ Play.prototype = {
          }
          */
 
+
+    },
+
+    fireBullet: function (x,y) {
+
+        // Retrieve a bullet from the bullets group
+        var bullet = this.bulletH1Group.getFirstExists(false);
+        if (!bullet) {
+          var bullet = new bulletH1(this.game, 250, 250);
+          this.bulletH1Group.add(bullet);
+        }
+        // Init the bullet
+        bullet.resetBulletH1(x, y);
+
+    },
+
+    playerFire: function () {
+
+      var y= this.player.y - this.player.height/2;
+      var x = this.player.x;
+        // Create one bullet
+        this.fireBullet(x,y);
+
+        // Play sound with small volume
+        //this.bulletSound.volume = 0.5;
+        //this.bulletSound.play();
     }
 
 };
