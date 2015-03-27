@@ -15,7 +15,69 @@ window.onload = function () {
 
   game.state.start('boot');
 };
-},{"./states/boot":4,"./states/gameover":5,"./states/menu":6,"./states/play":7,"./states/preload":8}],2:[function(require,module,exports){
+},{"./states/boot":5,"./states/gameover":6,"./states/menu":7,"./states/play":8,"./states/preload":9}],2:[function(require,module,exports){
+'use strict';
+
+var EnemyBomber;
+
+EnemyBomber = function(game, x, y, frame) {
+  Phaser.Sprite.call(this, game, x, y, 'EnemyBomber', frame);
+
+  // var
+  var lr;
+  var y;
+  var bomberMove = 75;
+
+  // Determinate if the bomber appear on the Left or on the Right
+  //lr = this.game.rnd.integerInRange(1, 100);
+  // The starting position of the bomber and consquently his moving direction
+  /*
+  if (id === 0) {
+    y = 25;
+  } else {
+    y = 75;
+  }
+  */
+  /*
+  if (lr > 50) {
+    var x = -60;
+    this.moveX = bomberMove;
+  } else {
+    var x = 560;
+    this.moveX = -bomberMove;
+  }
+  */
+  /*
+  this.health = 1;
+  this.alive = true;
+  */
+  //this.dropBombTimer = game.time.now;
+  //this.fireRayTimer = game.time.now;
+  this.game.physics.arcade.enable(this);
+  this.animations.add('blink');
+  this.animations.play('blink', 3, true);
+  //this.bomber.name = id.toString();
+
+};
+
+EnemyBomber.prototype = Object.create(Phaser.Sprite.prototype);
+EnemyBomber.prototype.constructor = EnemyBomber;
+
+EnemyBomber.prototype.update = function() {
+
+  // write your prefab's specific update code here
+
+};
+EnemyBomber.prototype.resetEnemyBomber = function (x, y) {
+
+  this.x = x;
+  this.y = y;
+  this.exists = true;
+
+}
+module.exports = EnemyBomber;
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var BulletH1;
@@ -53,7 +115,7 @@ BulletH1.prototype.resetBulletH1 = function (x, y) {
 }
 module.exports = BulletH1;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 
@@ -78,7 +140,7 @@ BulletH1Group.prototype.update = function() {
 
 module.exports = BulletH1Group;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 function Boot() {
@@ -96,7 +158,7 @@ Boot.prototype = {
 
 module.exports = Boot;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 function GameOver() {
 }
@@ -124,7 +186,7 @@ GameOver.prototype = {
 };
 module.exports = GameOver;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 function Menu() {
 }
@@ -182,12 +244,13 @@ Menu.prototype = {
 
 module.exports = Menu;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 // Prefabs
 var bulletH1Group = require('../prefabs/bulletH1Group');
 var bulletH1 = require('../prefabs/bulletH1');
+var EnemyBomber = require('../prefabs/EnemyBomber');
 
 function Play() {
 }
@@ -223,8 +286,13 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
-        // Create the bullet group
+
+
+        // Create groups
         this.bulletH1Group = new bulletH1Group(this.game);
+      this.EnemyBomber1Group = new bulletH1Group(this.game);
+
+
 
 
         /* Initialise some variables
@@ -257,6 +325,15 @@ Play.prototype = {
             this.playerFire();
         }
 
+      // Retrieve a bullet from the bullets group
+      var EnemyBomber1 = this.EnemyBomber1Group.getFirstExists(false);
+      if (!EnemyBomber1) {
+        var EnemyBomber1 = new EnemyBomber(this.game, 250, 15);
+        this.EnemyBomber1Group.add(EnemyBomber1);
+      }else {
+        // Init the bullet
+        EnemyBomber1.resetBulletH1(250, 15);
+      }
 
     },
 
@@ -326,7 +403,7 @@ Play.prototype = {
 
 module.exports = Play;
 
-},{"../prefabs/bulletH1":2,"../prefabs/bulletH1Group":3}],8:[function(require,module,exports){
+},{"../prefabs/EnemyBomber":2,"../prefabs/bulletH1":3,"../prefabs/bulletH1Group":4}],9:[function(require,module,exports){
 'use strict';
 function Preload() {
     this.asset = null;
@@ -352,6 +429,7 @@ Preload.prototype = {
 
         // Spritesheets
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
+        this.load.spritesheet('EnemyBomber', 'assets/enemy-bomber-1.png', 60, 40, 3);
 
     },
     create: function () {

@@ -3,6 +3,7 @@
 // Prefabs
 var bulletH1Group = require('../prefabs/bulletH1Group');
 var bulletH1 = require('../prefabs/bulletH1');
+var EnemyBomber = require('../prefabs/EnemyBomber');
 
 function Play() {
 }
@@ -38,8 +39,13 @@ Play.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.player.body.collideWorldBounds = true;
 
-        // Create the bullet group
+
+
+        // Create groups
         this.bulletH1Group = new bulletH1Group(this.game);
+      this.EnemyBomber1Group = new bulletH1Group(this.game);
+
+
 
 
         /* Initialise some variables
@@ -72,6 +78,15 @@ Play.prototype = {
             this.playerFire();
         }
 
+      // Retrieve a bullet from the bullets group
+      var EnemyBomber1 = this.EnemyBomber1Group.getFirstExists(false);
+      if (!EnemyBomber1) {
+        var EnemyBomber1 = new EnemyBomber(this.game, 250, 15);
+        this.EnemyBomber1Group.add(EnemyBomber1);
+      }else {
+        // Init the bullet
+        EnemyBomber1.resetBulletH1(250, 15);
+      }
 
     },
 

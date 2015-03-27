@@ -23,6 +23,7 @@ Preload.prototype = {
 
         // Spritesheets
         this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
+        this.load.spritesheet('EnemyBomber', 'assets/enemy-bomber-1.png', 60, 40, 3);
 
     },
     create: function () {
