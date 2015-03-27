@@ -77,6 +77,8 @@ Play.prototype = {
 
     movePlayer: function () {
 
+        // The method moveToPointer doesn't really do the job...
+
         // Get some infos
         this.posXMousePointer = Phaser.Math.roundTo(this.game.input.mousePointer.x);
         this.posXPlayer = Phaser.Math.roundTo(this.player.x);
@@ -125,7 +127,6 @@ Play.prototype = {
     },
 
     playerFire: function () {
-
       var y= this.player.y - this.player.height/2;
       var x = this.player.x;
         // Create one bullet
