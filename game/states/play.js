@@ -60,6 +60,11 @@ Play.prototype = {
         this.timeBullet = 188;
 
 
+      var EnemyBomber1 = new EnemyBomber(this.game, -60, 15);
+      this.game.add.existing(EnemyBomber1);
+      EnemyBomber1.resetEnemyBomber(15);
+
+
 
     },
 
@@ -78,15 +83,7 @@ Play.prototype = {
             this.playerFire();
         }
 
-      // Retrieve a bullet from the bullets group
-      var EnemyBomber1 = this.EnemyBomber1Group.getFirstExists(false);
-      if (!EnemyBomber1) {
-        var EnemyBomber1 = new EnemyBomber(this.game, 250, 15);
-        this.EnemyBomber1Group.add(EnemyBomber1);
-      }else {
-        // Init the bullet
-        EnemyBomber1.resetBulletH1(250, 15);
-      }
+
 
     },
 
