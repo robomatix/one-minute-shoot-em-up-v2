@@ -1,28 +1,26 @@
 /**
 * @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2014 Photon Storm Ltd.
+* @copyright    2015 Photon Storm Ltd.
 * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
 */
 
 /**
-* Phaser - ArcadeEmitter
-*
+* Emitter is a lightweight particle emitter that uses Arcade Physics.
+* It can be used for one-time explosions or for continuous effects like rain and fire.
+* All it really does is launch Particle objects out at set intervals, and fixes their positions and velocities accordingly.
+* 
 * @class Phaser.Particles.Arcade.Emitter
-* @classdesc Emitter is a lightweight particle emitter. It can be used for one-time explosions or for
-* continuous effects like rain and fire. All it really does is launch Particle objects out
-* at set intervals, and fixes their positions and velocities accorindgly.
 * @constructor
 * @extends Phaser.Group
 * @param {Phaser.Game} game - Current game instance.
 * @param {number} [x=0] - The x coordinate within the Emitter that the particles are emitted from.
 * @param {number} [y=0] - The y coordinate within the Emitter that the particles are emitted from.
-* @param {number} [maxParticles=50] - The total number of particles in this emitter..
+* @param {number} [maxParticles=50] - The total number of particles in this emitter.
 */
-
 Phaser.Particles.Arcade.Emitter = function (game, x, y, maxParticles) {
 
     /**
-    * @property {number} maxParticles - The total number of particles in this emitter..
+    * @property {number} maxParticles - The total number of particles in this emitter.
     * @default
     */
     this.maxParticles = maxParticles || 50;
@@ -41,16 +39,16 @@ Phaser.Particles.Arcade.Emitter = function (game, x, y, maxParticles) {
     this.type = Phaser.EMITTER;
 
     /**
-    * @property {number} width - The width of the emitter.  Particles can be randomly generated from anywhere within this box.
-    * @default
+    * @property {number} physicsType - The const physics body type of this object.
+    * @readonly
     */
-    this.width = 1;
+    this.physicsType = Phaser.GROUP;
 
     /**
-    * @property {number} height - The height of the emitter.  Particles can be randomly generated from anywhere within this box.
+    * @property {Phaser.Rectangle} area - The area of the emitter. Particles can be randomly generated from anywhere within this rectangle.
     * @default
     */
-    this.height = 1;
+    this.area = new Phaser.Rectangle(x, y, 1, 1);
 
     /**
     * @property {Phaser.Point} minParticleSpeed - The minimum possible velocity of a particle.
@@ -134,7 +132,7 @@ Phaser.Particles.Arcade.Emitter = function (game, x, y, maxParticles) {
     this.angularDrag = 0;
 
     /**
-    * @property {boolean} frequency - How often a particle is emitted in ms (if emitter is started with Explode === false).
+    * @property {number} frequency - How often a particle is emitted in ms (if emitter is started with Explode === false).
     * @default
     */
     this.frequency = 100;
@@ -237,6 +235,18 @@ Phaser.Particles.Arcade.Emitter = function (game, x, y, maxParticles) {
     this._counter = 0;
 
     /**
+    * @property {number} _flowQuantity - Internal counter for figuring out how many particles to launch per flow update.
+    * @private
+    */
+    this._flowQuantity = 0;
+
+    /**
+    * @property {number} _flowTotal - Internal counter for figuring out how many particles to launch in total.
+    * @private
+    */
+    this._flowTotal = 0;
+
+    /**
     * @property {boolean} _explode - Internal helper for the style of particle emission (all at once, or one at a time).
     * @private
     */
@@ -255,44 +265,59 @@ Phaser.Particles.Arcade.Emitter.prototype.constructor = Phaser.Particles.Arcade.
 
 /**
 * Called automatically by the game loop, decides when to launch particles and when to "die".
+* 
 * @method Phaser.Particles.Arcade.Emitter#update
 */
 Phaser.Particles.Arcade.Emitter.prototype.update = function () {
 
-    if (this.on)
+    if (this.on && this.game.time.time >= this._timer)
     {
-        if (this._explode)
+        this._timer = this.game.time.time + this.frequency * this.game.time.slowMotion;
+
+        if (this._flowTotal !== 0)
         {
-            this._counter = 0;
-
-            do
+            if (this._flowQuantity > 0)
             {
-                this.emitParticle();
-                this._counter++;
-            }
-            while (this._counter < this._quantity);
-
-            this.on = false;
-        }
-        else
-        {
-            if (this.game.time.now >= this._timer)
-            {
-                this.emitParticle();
-
-                this._counter++;
-
-                if (this._quantity > 0)
+                for (var i = 0; i < this._flowQuantity; i++)
                 {
-                    if (this._counter >= this._quantity)
+                    if (this.emitParticle())
+                    {
+                        this._counter++;
+
+                        if (this._flowTotal !== -1 && this._counter >= this._flowTotal)
+                        {
+                            this.on = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (this.emitParticle())
+                {
+                    this._counter++;
+
+                    if (this._flowTotal !== -1 && this._counter >= this._flowTotal)
                     {
                         this.on = false;
                     }
                 }
-
-                this._timer = this.game.time.now + this.frequency;
             }
         }
+        else
+        {
+            if (this.emitParticle())
+            {
+                this._counter++;
+
+                if (this._quantity > 0 && this._counter >= this._quantity)
+                {
+                    this.on = false;
+                }
+            }
+        }
+
     }
 
     var i = this.children.length;
@@ -314,7 +339,7 @@ Phaser.Particles.Arcade.Emitter.prototype.update = function () {
 * @method Phaser.Particles.Arcade.Emitter#makeParticles
 * @param {array|string} keys - A string or an array of strings that the particle sprites will use as their texture. If an array one is picked at random.
 * @param {array|number} [frames=0] - A frame number, or array of frames that the sprite will use. If an array one is picked at random.
-* @param {number} [quantity] - The number of particles to generate. If not given it will use the value of Emitter.maxParticles.
+* @param {number} [quantity] - The number of particles to generate. If not given it will use the value of Emitter.maxParticles. If the value is greater than Emitter.maxParticles it will use Emitter.maxParticles as the quantity.
 * @param {boolean} [collide=false] - If you want the particles to be able to collide with other Arcade Physics bodies then set this to true.
 * @param {boolean} [collideWorldBounds=false] - A particle can be set to collide against the World bounds automatically and rebound back into the World if this is set to true. Otherwise it will leave the World.
 * @return {Phaser.Particles.Arcade.Emitter} This Emitter instance.
@@ -331,6 +356,11 @@ Phaser.Particles.Arcade.Emitter.prototype.makeParticles = function (keys, frames
     var rndKey = keys;
     var rndFrame = frames;
     this._frames = frames;
+
+    if (quantity > this.maxParticles)
+    {
+        this.maxParticles = quantity;
+    }
 
     while (i < quantity)
     {
@@ -359,6 +389,7 @@ Phaser.Particles.Arcade.Emitter.prototype.makeParticles = function (keys, frames
         }
 
         particle.body.collideWorldBounds = collideWorldBounds;
+        particle.body.skipQuadTree = true;
 
         particle.exists = false;
         particle.visible = false;
@@ -399,40 +430,108 @@ Phaser.Particles.Arcade.Emitter.prototype.revive = function () {
 };
 
 /**
+* Call this function to emit the given quantity of particles at all once (an explosion)
+* 
+* @method Phaser.Particles.Arcade.Emitter#explode
+* @param {number} [lifespan=0] - How long each particle lives once emitted in ms. 0 = forever.
+* @param {number} [quantity=0] - How many particles to launch.
+*/
+Phaser.Particles.Arcade.Emitter.prototype.explode = function (lifespan, quantity) {
+
+    this._flowTotal = 0;
+
+    this.start(true, lifespan, 0, quantity, false);
+
+};
+
+/**
+* Call this function to start emitting a flow of particles at the given frequency.
+* It will carry on going until the total given is reached.
+* Each time the flow is run the quantity number of particles will be emitted together.
+* If you set the total to be 20 and quantity to be 5 then flow will emit 4 times in total (4 x 5 = 20 total)
+* If you set the total to be -1 then no quantity cap is used and it will keep emitting.
+* 
+* @method Phaser.Particles.Arcade.Emitter#flow
+* @param {number} [lifespan=0] - How long each particle lives once emitted in ms. 0 = forever.
+* @param {number} [frequency=250] - Frequency is how often to emit the particles, given in ms.
+* @param {number} [quantity=1] - How many particles to launch each time the frequency is met. Can never be > Emitter.maxParticles.
+* @param {number} [total=-1] - How many particles to launch in total. If -1 it will carry on indefinitely.
+* @param {boolean} [immediate=true] - Should the flow start immediately (true) or wait until the first frequency event? (false)
+*/
+Phaser.Particles.Arcade.Emitter.prototype.flow = function (lifespan, frequency, quantity, total, immediate) {
+
+    if (typeof quantity === 'undefined' || quantity === 0) { quantity = 1; }
+    if (typeof total === 'undefined') { total = -1; }
+    if (typeof immediate === 'undefined') { immediate = true; }
+
+    if (quantity > this.maxParticles)
+    {
+        quantity = this.maxParticles;
+    }
+
+    this._counter = 0;
+    this._flowQuantity = quantity;
+    this._flowTotal = total;
+
+    if (immediate)
+    {
+        this.start(true, lifespan, frequency, quantity);
+
+        this._counter += quantity;
+        this.on = true;
+        this._timer = this.game.time.time + frequency * this.game.time.slowMotion;
+    }
+    else
+    {
+        this.start(false, lifespan, frequency, quantity);
+    }
+
+};
+
+/**
 * Call this function to start emitting particles.
+* 
 * @method Phaser.Particles.Arcade.Emitter#start
 * @param {boolean} [explode=true] - Whether the particles should all burst out at once (true) or at the frequency given (false).
 * @param {number} [lifespan=0] - How long each particle lives once emitted in ms. 0 = forever.
 * @param {number} [frequency=250] - Ignored if Explode is set to true. Frequency is how often to emit 1 particle. Value given in ms.
-* @param {number} [quantity=0] - How many particles to launch. 0 = "all of the particles".
+* @param {number} [quantity=0] - How many particles to launch. 0 = "all of the particles" which will keep emitting until Emitter.maxParticles is reached.
+* @param {number} [forceQuantity=false] - If `true` and creating a particle flow, the quantity emitted will be forced to the be quantity given in this call. This can never exceed Emitter.maxParticles.
 */
-Phaser.Particles.Arcade.Emitter.prototype.start = function (explode, lifespan, frequency, quantity) {
+Phaser.Particles.Arcade.Emitter.prototype.start = function (explode, lifespan, frequency, quantity, forceQuantity) {
 
     if (typeof explode === 'undefined') { explode = true; }
     if (typeof lifespan === 'undefined') { lifespan = 0; }
     if (typeof frequency === 'undefined' || frequency === null) { frequency = 250; }
     if (typeof quantity === 'undefined') { quantity = 0; }
+    if (typeof forceQuantity === 'undefined') { forceQuantity = false; }
+
+    if (quantity > this.maxParticles)
+    {
+        quantity = this.maxParticles;
+    }
 
     this.revive();
 
     this.visible = true;
-    this.on = true;
 
-    this._explode = explode;
     this.lifespan = lifespan;
     this.frequency = frequency;
 
-    if (explode)
+    if (explode || forceQuantity)
     {
-        this._quantity = quantity;
+        for (var i = 0; i < quantity; i++)
+        {
+            this.emitParticle();
+        }
     }
     else
     {
+        this.on = true;
         this._quantity += quantity;
+        this._counter = 0;
+        this._timer = this.game.time.time + frequency * this.game.time.slowMotion;
     }
-
-    this._counter = 0;
-    this._timer = this.game.time.now + frequency;
 
 };
 
@@ -440,6 +539,7 @@ Phaser.Particles.Arcade.Emitter.prototype.start = function (explode, lifespan, f
 * This function can be used both internally and externally to emit the next particle in the queue.
 *
 * @method Phaser.Particles.Arcade.Emitter#emitParticle
+* @return {boolean} True if a particle was emitted, otherwise false.
 */
 Phaser.Particles.Arcade.Emitter.prototype.emitParticle = function () {
 
@@ -447,7 +547,7 @@ Phaser.Particles.Arcade.Emitter.prototype.emitParticle = function () {
 
     if (particle === null)
     {
-        return;
+        return false;
     }
 
     if (this.width > 1 || this.height > 1)
@@ -508,9 +608,9 @@ Phaser.Particles.Arcade.Emitter.prototype.emitParticle = function () {
 
     particle.body.bounce.setTo(this.bounce.x, this.bounce.y);
 
-    particle.body.velocity.x = this.game.rnd.integerInRange(this.minParticleSpeed.x, this.maxParticleSpeed.x);
-    particle.body.velocity.y = this.game.rnd.integerInRange(this.minParticleSpeed.y, this.maxParticleSpeed.y);
-    particle.body.angularVelocity = this.game.rnd.integerInRange(this.minRotation, this.maxRotation);
+    particle.body.velocity.x = this.game.rnd.between(this.minParticleSpeed.x, this.maxParticleSpeed.x);
+    particle.body.velocity.y = this.game.rnd.between(this.minParticleSpeed.y, this.maxParticleSpeed.y);
+    particle.body.angularVelocity = this.game.rnd.between(this.minRotation, this.maxRotation);
 
     particle.body.gravity.y = this.gravity;
 
@@ -521,18 +621,34 @@ Phaser.Particles.Arcade.Emitter.prototype.emitParticle = function () {
 
     particle.onEmit();
 
+    return true;
+
+};
+
+/**
+* Destroys this Emitter, all associated child Particles and then removes itself from the Particle Manager.
+* 
+* @method Phaser.Particles.Arcade.Emitter#destroy
+*/
+Phaser.Particles.Arcade.Emitter.prototype.destroy = function () {
+
+    this.game.particles.remove(this);
+
+    Phaser.Group.prototype.destroy.call(this, true, false);
+
 };
 
 /**
 * A more compact way of setting the width and height of the emitter.
+* 
 * @method Phaser.Particles.Arcade.Emitter#setSize
 * @param {number} width - The desired width of the emitter (particles are spawned randomly within these dimensions).
 * @param {number} height - The desired height of the emitter.
 */
 Phaser.Particles.Arcade.Emitter.prototype.setSize = function (width, height) {
 
-    this.width = width;
-    this.height = height;
+    this.area.width = width;
+    this.area.height = height;
 
 };
 
@@ -594,7 +710,7 @@ Phaser.Particles.Arcade.Emitter.prototype.setRotation = function (min, max) {
 * @param {number} [min=1] - The minimum value for this range.
 * @param {number} [max=1] - The maximum value for this range.
 * @param {number} [rate=0] - The rate (in ms) at which the particles will change in alpha from min to max, or set to zero to pick a random alpha between the two.
-* @param {number} [ease=Phaser.Easing.Linear.None] - If you've set a rate > 0 this is the easing formula applied between the min and max values.
+* @param {function} [ease=Phaser.Easing.Linear.None] - If you've set a rate > 0 this is the easing formula applied between the min and max values.
 * @param {boolean} [yoyo=false] - If you've set a rate > 0 you can set if the ease will yoyo or not (i.e. ease back to its original values)
 */
 Phaser.Particles.Arcade.Emitter.prototype.setAlpha = function (min, max, rate, ease, yoyo) {
@@ -635,7 +751,7 @@ Phaser.Particles.Arcade.Emitter.prototype.setAlpha = function (min, max, rate, e
 * @param {number} [minY=1] - The minimum value of Particle.scale.y.
 * @param {number} [maxY=1] - The maximum value of Particle.scale.y.
 * @param {number} [rate=0] - The rate (in ms) at which the particles will change in scale from min to max, or set to zero to pick a random size between the two.
-* @param {number} [ease=Phaser.Easing.Linear.None] - If you've set a rate > 0 this is the easing formula applied between the min and max values.
+* @param {function} [ease=Phaser.Easing.Linear.None] - If you've set a rate > 0 this is the easing formula applied between the min and max values.
 * @param {boolean} [yoyo=false] - If you've set a rate > 0 you can set if the ease will yoyo or not (i.e. ease back to its original values)
 */
 Phaser.Particles.Arcade.Emitter.prototype.setScale = function (minX, maxX, minY, maxY, rate, ease, yoyo) {
@@ -657,7 +773,7 @@ Phaser.Particles.Arcade.Emitter.prototype.setScale = function (minX, maxX, minY,
 
     this.autoScale = false;
 
-    if (rate > 0 && (minX !== maxX) || (minY !== maxY))
+    if (rate > 0 && ((minX !== maxX) || (minY !== maxY)))
     {
         var tweenData = { x: minX, y: minY };
         var tween = this.game.make.tween(tweenData).to( { x: maxX, y: maxY }, rate, ease);
@@ -693,6 +809,38 @@ Phaser.Particles.Arcade.Emitter.prototype.at = function (object) {
     }
 
 };
+
+/**
+* @name Phaser.Particles.Arcade.Emitter#width
+* @property {number} width - Gets or sets the width of the Emitter. This is the region in which a particle can be emitted.
+*/
+Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "width", {
+
+    get: function () {
+        return this.area.width;
+    },
+
+    set: function (value) {
+        this.area.width = value;
+    }
+
+});
+
+/**
+* @name Phaser.Particles.Arcade.Emitter#height
+* @property {number} height - Gets or sets the height of the Emitter. This is the region in which a particle can be emitted.
+*/
+Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "height", {
+
+    get: function () {
+        return this.area.height;
+    },
+
+    set: function (value) {
+        this.area.height = value;
+    }
+
+});
 
 /**
 * @name Phaser.Particles.Arcade.Emitter#x
@@ -734,7 +882,7 @@ Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "y", {
 Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "left", {
 
     get: function () {
-        return Math.floor(this.x - (this.width / 2));
+        return Math.floor(this.x - (this.area.width / 2));
     }
 
 });
@@ -747,7 +895,7 @@ Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "left", {
 Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "right", {
 
     get: function () {
-        return Math.floor(this.x + (this.width / 2));
+        return Math.floor(this.x + (this.area.width / 2));
     }
 
 });
@@ -760,7 +908,7 @@ Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "right", {
 Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "top", {
 
     get: function () {
-        return Math.floor(this.y - (this.height / 2));
+        return Math.floor(this.y - (this.area.height / 2));
     }
 
 });
@@ -773,7 +921,7 @@ Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "top", {
 Object.defineProperty(Phaser.Particles.Arcade.Emitter.prototype, "bottom", {
 
     get: function () {
-        return Math.floor(this.y + (this.height / 2));
+        return Math.floor(this.y + (this.area.height / 2));
     }
 
 });

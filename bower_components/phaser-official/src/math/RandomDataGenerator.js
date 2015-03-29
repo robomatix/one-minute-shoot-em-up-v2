@@ -2,20 +2,23 @@
 
 /**
 * @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2014 Photon Storm Ltd.
+* @copyright    2015 Photon Storm Ltd.
 * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
 */
 
 /**
-* Phaser.RandomDataGenerator constructor.
+* An extremely useful repeatable random data generator.
+*
+* Based on Nonsense by Josh Faul https://github.com/jocafa/Nonsense.
+*
+* The random number genererator is based on the Alea PRNG, but is modified.
+*  - https://github.com/coverslide/node-alea
+*  - https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+*  - http://baagoe.org/en/wiki/Better_random_numbers_for_javascript (original, perm. 404)
 *
 * @class Phaser.RandomDataGenerator
-* @classdesc An extremely useful repeatable random data generator. Access it via Phaser.Game.rnd
-* Based on Nonsense by Josh Faul https://github.com/jocafa/Nonsense.
-* Random number generator from http://baagoe.org/en/wiki/Better_random_numbers_for_javascript
-*
 * @constructor
-* @param {array} seeds
+* @param {any[]} [seeds] - An array of values to use as the seed.
 */
 Phaser.RandomDataGenerator = function (seeds) {
 
@@ -73,22 +76,29 @@ Phaser.RandomDataGenerator.prototype = {
     /**
     * Reset the seed of the random data generator.
     *
+    * _Note_: the seed array is only processed up to the first `undefined` (or `null`) value, should such be present.
+    *
     * @method Phaser.RandomDataGenerator#sow
-    * @param {array} seeds
+    * @param {any[]} seeds - The array of seeds: the `toString()` of each value is used.
     */
     sow: function (seeds) {
 
-        if (typeof seeds === "undefined") { seeds = []; }
-
+        // Always reset to default seed
         this.s0 = this.hash(' ');
         this.s1 = this.hash(this.s0);
         this.s2 = this.hash(this.s1);
         this.c = 1;
 
-        var seed;
-
-        for (var i = 0; seed = seeds[i++]; )
+        if (!seeds)
         {
+            return;
+        }
+
+        // Apply any seeds
+        for (var i = 0; i < seeds.length && (seeds[i] != null); i++)
+        {
+            var seed = seeds[i];
+
             this.s0 -= this.hash(seed);
             this.s0 += ~~(this.s0 < 0);
             this.s1 -= this.hash(seed);
@@ -104,7 +114,7 @@ Phaser.RandomDataGenerator.prototype = {
     *
     * @method Phaser.RandomDataGenerator#hash
     * @private
-    * @param {Any} data
+    * @param {any} data
     * @return {number} hashed value.
     */
     hash: function (data) {
@@ -175,6 +185,21 @@ Phaser.RandomDataGenerator.prototype = {
     integerInRange: function (min, max) {
 
         return Math.floor(this.realInRange(0, max - min + 1) + min);
+
+    },
+
+    /**
+    * Returns a random integer between and including min and max.
+    * This method is an alias for RandomDataGenerator.integerInRange.
+    *
+    * @method Phaser.RandomDataGenerator#between
+    * @param {number} min - The minimum value in the range.
+    * @param {number} max - The maximum value in the range.
+    * @return {number} A random number between min and max.
+    */
+    between: function (min, max) {
+
+        return this.integerInRange(min, max);
 
     },
 

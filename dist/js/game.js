@@ -3,7 +3,7 @@
 
 //global variables
 window.onload = function () {
-  var game = new Phaser.Game(500, 500, Phaser.AUTO, 'one-minute-shoot-em-up');
+  var game = new Phaser.Game(500, 500, Phaser.AUTO, 'one-minute-shootem-up');
 
   // Game States
   game.state.add('boot', require('./states/boot'));
@@ -309,9 +309,18 @@ Play.prototype = {
         this.timeBullet = 188;
 
 
+      /* add a timer to generate enemies
+       ******************************************************/
+      this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 1, this.generateEnemiesAndCountdown, this);
+      this.gameTimer.timer.start();
+
+      /* Launch the first enemy Bomber
+       *********************************************/
+
       var EnemyBomber1 = new EnemyBomber(this.game, -60, 15);
       this.game.add.existing(EnemyBomber1);
       EnemyBomber1.resetEnemyBomber(15);
+
 
 
 
@@ -396,7 +405,13 @@ Play.prototype = {
         // Play sound with small volume
         //this.bulletSound.volume = 0.5;
         //this.bulletSound.play();
-    }
+    },
+
+  generateEnemiesAndCountdown: function(){
+
+    console.log('geac'+this.gameTimer);
+
+  }
 
 };
 
