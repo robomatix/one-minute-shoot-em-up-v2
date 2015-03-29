@@ -20,7 +20,7 @@ window.onload = function () {
 
 var EnemyBomber;
 
-EnemyBomber = function(game, x, y, frame) {
+EnemyBomber = function (game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'EnemyBomber', frame);
 
   this.health = 1;
@@ -31,14 +31,14 @@ EnemyBomber = function(game, x, y, frame) {
   this.game.physics.arcade.enable(this);
   this.animations.add('blink');
   this.animations.play('blink', 3, true);
-  //this.bomber.name = id.toString();
+  this.name = "";
 
 };
 
 EnemyBomber.prototype = Object.create(Phaser.Sprite.prototype);
 EnemyBomber.prototype.constructor = EnemyBomber;
 
-EnemyBomber.prototype.update = function() {
+EnemyBomber.prototype.update = function () {
 
 //console.log(this.x);
 
@@ -46,7 +46,12 @@ EnemyBomber.prototype.update = function() {
   if (this.x < -65 || this.x > 565) {
     this.alive = false;
     this.kill();
-    this.resetEnemyBomber(15);
+    if(this.name == "EnemyBomber1"){
+      var resetEnemyBomberX = 15;
+    }else{
+      resetEnemyBomberX = 80;
+    }
+    this.resetEnemyBomber(resetEnemyBomberX);
   }
 
 };
@@ -59,7 +64,7 @@ EnemyBomber.prototype.resetEnemyBomber = function (y) {
 
   // The starting position of the bomber and consquently his moving direction
   // Determinate if the bomber appear on the Left or on the Right
- var lr = this.game.rnd.integerInRange(1, 100);
+  var lr = this.game.rnd.integerInRange(1, 100);
   // The starting position of the bomber and consequently his moving direction
 
   if (lr > 50) {
@@ -84,26 +89,26 @@ module.exports = EnemyBomber;
 
 var BulletH1;
 
-BulletH1 = function(game, x, y, frame) {
+BulletH1 = function (game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'bulletH1', frame);
 
-    // Add physic body
-    this.game.physics.arcade.enableBody(this);
+  // Add physic body
+  this.game.physics.arcade.enableBody(this);
 
-    // Kill the sprite if out of the world
-    this.checkWorldBounds = true;
-    this.outOfBoundsKill = true;
+  // Kill the sprite if out of the world
+  this.checkWorldBounds = true;
+  this.outOfBoundsKill = true;
 
-    // Init the bullet
-    this.anchor.setTo(0.5, 1);
-    this.body.velocity.y = -400;
+  // Init the bullet
+  this.anchor.setTo(0.5, 1);
+  this.body.velocity.y = -400;
 
 };
 
 BulletH1.prototype = Object.create(Phaser.Sprite.prototype);
 BulletH1.prototype.constructor = BulletH1;
 
-BulletH1.prototype.update = function() {
+BulletH1.prototype.update = function () {
 
   // write your prefab's specific update code here
 
@@ -121,12 +126,10 @@ module.exports = BulletH1;
 'use strict';
 
 
-
-
 var BulletH1Group;
 
-BulletH1Group = function(game, parent) {
-    Phaser.Group.call(this, game, parent);
+BulletH1Group = function (game, parent) {
+  Phaser.Group.call(this, game, parent);
 
 
 };
@@ -134,7 +137,7 @@ BulletH1Group = function(game, parent) {
 BulletH1Group.prototype = Object.create(Phaser.Group.prototype);
 BulletH1Group.prototype.constructor = BulletH1Group;
 
-BulletH1Group.prototype.update = function() {
+BulletH1Group.prototype.update = function () {
 
   // write your prefab's specific update code here
 
@@ -149,13 +152,13 @@ function Boot() {
 }
 
 Boot.prototype = {
-    preload: function () {
-        this.load.image('preloader', 'assets/preloader.gif');
-    },
-    create: function () {
-        this.game.input.maxPointers = 1;
-        this.game.state.start('preload');
-    }
+  preload: function () {
+    this.load.image('preloader', 'assets/preloader.gif');
+  },
+  create: function () {
+    this.game.input.maxPointers = 1;
+    this.game.state.start('preload');
+  }
 };
 
 module.exports = Boot;
@@ -166,25 +169,33 @@ function GameOver() {
 }
 
 GameOver.prototype = {
-    preload: function () {
+  preload: function () {
 
-    },
-    create: function () {
-        var style = { font: '65px Arial', fill: '#ffffff', align: 'center'};
-        this.titleText = this.game.add.text(this.game.world.centerX, 100, 'Game Over!', style);
-        this.titleText.anchor.setTo(0.5, 0.5);
+  },
+  create: function () {
+    var style = {font: '65px Arial', fill: '#ffffff', align: 'center'};
+    this.titleText = this.game.add.text(this.game.world.centerX, 100, 'Game Over!', style);
+    this.titleText.anchor.setTo(0.5, 0.5);
 
-        this.congratsText = this.game.add.text(this.game.world.centerX, 200, 'You Win!', { font: '32px Arial', fill: '#ffffff', align: 'center'});
-        this.congratsText.anchor.setTo(0.5, 0.5);
+    this.congratsText = this.game.add.text(this.game.world.centerX, 200, 'You Win!', {
+      font: '32px Arial',
+      fill: '#ffffff',
+      align: 'center'
+    });
+    this.congratsText.anchor.setTo(0.5, 0.5);
 
-        this.instructionText = this.game.add.text(this.game.world.centerX, 300, 'Click To Play Again', { font: '16px Arial', fill: '#ffffff', align: 'center'});
-        this.instructionText.anchor.setTo(0.5, 0.5);
-    },
-    update: function () {
-        if (this.game.input.activePointer.justPressed()) {
-            this.game.state.start('play');
-        }
+    this.instructionText = this.game.add.text(this.game.world.centerX, 300, 'Click To Play Again', {
+      font: '16px Arial',
+      fill: '#ffffff',
+      align: 'center'
+    });
+    this.instructionText.anchor.setTo(0.5, 0.5);
+  },
+  update: function () {
+    if (this.game.input.activePointer.justPressed()) {
+      this.game.state.start('play');
     }
+  }
 };
 module.exports = GameOver;
 
@@ -194,54 +205,58 @@ function Menu() {
 }
 
 Menu.prototype = {
-    preload: function () {
+  preload: function () {
 
-    },
-    create: function () {
+  },
+  create: function () {
 
 
-        // Title
-        this.titleText = this.game.add.bitmapText(60, 500, 'fontSilkscreen', 'The One Minute Shoot \'Em Up', 18);
-        this.game.add.tween(this.titleText).to({y: 10}, 1000).easing(Phaser.Easing.Bounce.Out).start();
+    // Title
+    this.titleText = this.game.add.bitmapText(60, 500, 'fontSilkscreen', 'The One Minute Shoot \'Em Up', 18);
+    this.game.add.tween(this.titleText).to({y: 10}, 1000).easing(Phaser.Easing.Bounce.Out).start();
 
-        // Pitch
-        var pitchTextString1 = "one minute";
-        var pitchTextString2 = "to";
-        var pitchTextString3 = "save";
-        var pitchTextString4 = "the";
-        var pitchTextString5 = "world";
-        var pitchTextString6 = "!!!";
-        this.pitchText1 = this.game.add.bitmapText(30, 500, 'fontSilkscreen', pitchTextString1, 56);
-        this.pitchText2 = this.game.add.bitmapText(230, 500, 'fontSilkscreen', pitchTextString2, 18);
-        this.pitchText3 = this.game.add.bitmapText(155, 500, 'fontSilkscreen', pitchTextString3, 56);
-        this.pitchText4 = this.game.add.bitmapText(220, 500, 'fontSilkscreen', pitchTextString4, 18);
-        this.pitchText5 = this.game.add.bitmapText(110, 500, 'fontSilkscreen', pitchTextString5, 64);
-        this.pitchText6 = this.game.add.bitmapText(500, 200, 'fontSilkscreen', pitchTextString6, 64);
-        this.game.add.tween(this.pitchText1).to({y: 60}, 1000).easing(Phaser.Easing.Bounce.Out).delay(1500).start();
-        this.game.add.tween(this.pitchText2).to({y: 110}, 1000).easing(Phaser.Easing.Bounce.Out).delay(2000).start();
-        this.game.add.tween(this.pitchText3).to({y: 130}, 1000).easing(Phaser.Easing.Bounce.Out).delay(3500).start();
-        this.game.add.tween(this.pitchText4).to({y: 180}, 1000).easing(Phaser.Easing.Bounce.Out).delay(4000).start();
-        this.game.add.tween(this.pitchText5).to({y: 200}, 1000).easing(Phaser.Easing.Bounce.Out).delay(5500).start();
-        this.game.add.tween(this.pitchText6).to({x: 370}, 1000).easing(Phaser.Easing.Bounce.Out).delay(6000).start();
+    // Pitch
+    var pitchTextString1 = "one minute";
+    var pitchTextString2 = "to";
+    var pitchTextString3 = "save";
+    var pitchTextString4 = "the";
+    var pitchTextString5 = "world";
+    var pitchTextString6 = "!!!";
+    this.pitchText1 = this.game.add.bitmapText(30, 500, 'fontSilkscreen', pitchTextString1, 56);
+    this.pitchText2 = this.game.add.bitmapText(230, 500, 'fontSilkscreen', pitchTextString2, 18);
+    this.pitchText3 = this.game.add.bitmapText(155, 500, 'fontSilkscreen', pitchTextString3, 56);
+    this.pitchText4 = this.game.add.bitmapText(220, 500, 'fontSilkscreen', pitchTextString4, 18);
+    this.pitchText5 = this.game.add.bitmapText(110, 500, 'fontSilkscreen', pitchTextString5, 64);
+    this.pitchText6 = this.game.add.bitmapText(500, 200, 'fontSilkscreen', pitchTextString6, 64);
+    this.game.add.tween(this.pitchText1).to({y: 60}, 1000).easing(Phaser.Easing.Bounce.Out).delay(1500).start();
+    this.game.add.tween(this.pitchText2).to({y: 110}, 1000).easing(Phaser.Easing.Bounce.Out).delay(2000).start();
+    this.game.add.tween(this.pitchText3).to({y: 130}, 1000).easing(Phaser.Easing.Bounce.Out).delay(3500).start();
+    this.game.add.tween(this.pitchText4).to({y: 180}, 1000).easing(Phaser.Easing.Bounce.Out).delay(4000).start();
+    this.game.add.tween(this.pitchText5).to({y: 200}, 1000).easing(Phaser.Easing.Bounce.Out).delay(5500).start();
+    this.game.add.tween(this.pitchText6).to({x: 370}, 1000).easing(Phaser.Easing.Bounce.Out).delay(6000).start();
 
-        // Hero
-        this.hero = this.game.add.sprite(this.game.world.centerX, -20, 'hero');
-        this.hero.anchor.setTo(0.5, 0.5);
-        this.game.add.tween(this.hero)
-            .to({ y: 470 }, 2000, Phaser.Easing.Bounce.Out, true, 7000, 0, false)
-            .to({x: 470}, 3500, Phaser.Easing.Linear.NONE, true, 0, 0, false)
-            .to({x: 25}, 7000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
-        //http://www.html5gamedevs.com/topic/1651-tween-oncompletecallback/
+    // Hero
+    this.hero = this.game.add.sprite(this.game.world.centerX, -20, 'hero');
+    this.hero.anchor.setTo(0.5, 0.5);
+    this.game.add.tween(this.hero)
+      .to({y: 470}, 2000, Phaser.Easing.Bounce.Out, true, 7000, 0, false)
+      .to({x: 470}, 3500, Phaser.Easing.Linear.NONE, true, 0, 0, false)
+      .to({x: 25}, 7000, Phaser.Easing.Linear.NONE, true, 0, 10000, true);
+    //http://www.html5gamedevs.com/topic/1651-tween-oncompletecallback/
 
-        this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', { font: '16px Arial', fill: '#ffffff', align: 'center'});
-        this.instructionsText.anchor.setTo(0.5, 0.5);
+    this.instructionsText = this.game.add.text(this.game.world.centerX, 400, 'Click anywhere to play', {
+      font: '16px Arial',
+      fill: '#ffffff',
+      align: 'center'
+    });
+    this.instructionsText.anchor.setTo(0.5, 0.5);
 
-    },
-    update: function () {
-        if (this.game.input.activePointer.justPressed()) {
-            this.game.state.start('play');
-        }
+  },
+  update: function () {
+    if (this.game.input.activePointer.justPressed()) {
+      this.game.state.start('play');
     }
+  }
 };
 
 module.exports = Menu;
@@ -257,159 +272,167 @@ var EnemyBomber = require('../prefabs/EnemyBomber');
 function Play() {
 }
 Play.prototype = {
-    create: function () {
+  create: function () {
 
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-
-        /* Initialise emitters
-         **********************************************/
-
-        // Add a starfield to the background of the game
-        var startEmitter = this.game.add.emitter(this.game.world.centerX, 0, 777);
-        startEmitter.width = this.game.world.width;
-        startEmitter.makeParticles('pixel');
-        startEmitter.setYSpeed(18, 88);
-        startEmitter.setXSpeed(0, 0);
-        startEmitter.minParticleScale = 0.1;
-        startEmitter.maxParticleScale = 0.5;
-        startEmitter.minRotation = 0;
-        startEmitter.maxRotation = 0;
-        startEmitter.gravity = 0;
-        startEmitter.start(false, 18000, 100, 0);
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
 
-        /* Add all the sprites/groups to the game
-         *********************************************/
+    /* Initialise emitters
+     **********************************************/
 
-        // Add the player at the bottom of the screen
-        this.player = this.game.add.sprite(this.game.world.centerX, 470, 'hero');
-        this.game.physics.arcade.enable(this.player);
-        this.player.anchor.setTo(0.5, 0.5);
-        this.player.body.collideWorldBounds = true;
-
-
-
-        // Create groups
-        this.bulletH1Group = new bulletH1Group(this.game);
-      this.EnemyBomber1Group = new bulletH1Group(this.game);
-
-
-
-
-        /* Initialise some variables
-         *********************************************/
-
-        // Hero Variables
-        this.heroSpeedX = 88;
-
-        // Game variables
-        this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
-        this.nextBullet = 0;
-        this.timeBullet = 188;
+    // Add a starfield to the background of the game
+    var startEmitter = this.game.add.emitter(this.game.world.centerX, 0, 777);
+    startEmitter.width = this.game.world.width;
+    startEmitter.makeParticles('pixel');
+    startEmitter.setYSpeed(18, 88);
+    startEmitter.setXSpeed(0, 0);
+    startEmitter.minParticleScale = 0.1;
+    startEmitter.maxParticleScale = 0.5;
+    startEmitter.minRotation = 0;
+    startEmitter.maxRotation = 0;
+    startEmitter.gravity = 0;
+    startEmitter.start(false, 18000, 100, 0);
 
 
-      /* add a timer to generate enemies
-       ******************************************************/
-      this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 1, this.generateEnemiesAndCountdown, this);
-      this.gameTimer.timer.start();
+    /* Add all the sprites/groups to the game
+     *********************************************/
 
-      /* Launch the first enemy Bomber
-       *********************************************/
-
-      var EnemyBomber1 = new EnemyBomber(this.game, -60, 15);
-      this.game.add.existing(EnemyBomber1);
-      EnemyBomber1.resetEnemyBomber(15);
+    // Add the player at the bottom of the screen
+    this.player = this.game.add.sprite(this.game.world.centerX, 470, 'hero');
+    this.game.physics.arcade.enable(this.player);
+    this.player.anchor.setTo(0.5, 0.5);
+    this.player.body.collideWorldBounds = true;
 
 
+    // Create groups
+    this.bulletH1Group = new bulletH1Group(this.game);
 
 
-    },
+    /* Initialise some variables
+     *********************************************/
 
-    update: function () {
+    // Hero Variables
+    this.heroSpeedX = 88;
 
-        // Move the player when the mouse is moved
-        this.movePlayer();
+    // Game variables
+    this.totalDuration = 60;
+    this.CountdownDisplay = this.totalDuration;
+    this.game.countIteration = 0;
 
-        // Fire a bullet when left click on the mouse
-        // And if the previous bullet was emitted enough time ago
-        if (this.game.input.activePointer.isDown && this.game.time.now > this.nextBullet)
-        {
-            // Reset the timer
-            this.nextBullet = this.game.time.now + this.timeBullet;
-
-            this.playerFire();
-        }
+    this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+    this.nextBullet = 0;
+    this.timeBullet = 188;
 
 
+    /* add a timer to generate enemies
+     ******************************************************/
 
-    },
-
-    movePlayer: function () {
-
-        // The method moveToPointer doesn't really do the job...
-
-        // Get some infos
-        this.posXMousePointer = Phaser.Math.roundTo(this.game.input.mousePointer.x);
-        this.posXPlayer = Phaser.Math.roundTo(this.player.x);
-
-        // The mouse has moved
-        if (this.posXMousePointerPrevious != this.posXMousePointer) {
-
-            // To go the left
-            if (this.posXMousePointer < this.posXPlayer) {
-                // Move the player to the left
-                this.player.body.velocity.x = -this.heroSpeedX;
-            }
-            // To go to the right
-            else if (this.posXMousePointer > this.posXPlayer) {
-                // Move the player to the right
-                this.player.body.velocity.x = this.heroSpeedX;
-            }
-
-        }
-
-        // Register the position of the mouse to use it as a reference for the next update
-        this.posXMousePointerPrevious = this.posXMousePointer;
-        /*
-
-         // If neither key are pressed
-         else {
-         // Stop the player
-         this.player.body.velocity.x = 0;
-         }
-         */
+    this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 1, this.generateEnemiesAndCountdown, this);
+    this.gameTimer.timer.start();
 
 
-    },
+    /* Launch the first enemy Bomber
+     *********************************************/
 
-    fireBullet: function (x,y) {
+    var EnemyBomber1 = new EnemyBomber(this.game, -60, 15);
+    this.game.add.existing(EnemyBomber1);
+    EnemyBomber1.name="EnemyBomber1";
+    EnemyBomber1.resetEnemyBomber(15);
 
-        // Retrieve a bullet from the bullets group
-        var bullet = this.bulletH1Group.getFirstExists(false);
-        if (!bullet) {
-          var bullet = new bulletH1(this.game, 250, 250);
-          this.bulletH1Group.add(bullet);
-        }
-        // Init the bullet
-        bullet.resetBulletH1(x, y);
 
-    },
+  },
 
-    playerFire: function () {
-      var y= this.player.y - this.player.height/2;
-      var x = this.player.x;
-        // Create one bullet
-        this.fireBullet(x,y);
+  update: function () {
 
-        // Play sound with small volume
-        //this.bulletSound.volume = 0.5;
-        //this.bulletSound.play();
-    },
+    // Move the player when the mouse is moved
+    this.movePlayer();
 
-  generateEnemiesAndCountdown: function(){
+    // Fire a bullet when left click on the mouse
+    // And if the previous bullet was emitted enough time ago
+    if (this.game.input.activePointer.isDown && this.game.time.now > this.nextBullet) {
+      // Reset the timer
+      this.nextBullet = this.game.time.now + this.timeBullet;
 
-    console.log('geac'+this.gameTimer);
+      this.playerFire();
+    }
+
+
+  },
+
+  movePlayer: function () {
+
+    // The method moveToPointer doesn't really do the job...
+
+    // Get some infos
+    this.posXMousePointer = Phaser.Math.roundTo(this.game.input.mousePointer.x);
+    this.posXPlayer = Phaser.Math.roundTo(this.player.x);
+
+    // The mouse has moved
+    if (this.posXMousePointerPrevious != this.posXMousePointer) {
+
+      // To go the left
+      if (this.posXMousePointer < this.posXPlayer) {
+        // Move the player to the left
+        this.player.body.velocity.x = -this.heroSpeedX;
+      }
+      // To go to the right
+      else if (this.posXMousePointer > this.posXPlayer) {
+        // Move the player to the right
+        this.player.body.velocity.x = this.heroSpeedX;
+      }
+
+    }
+
+    // Register the position of the mouse to use it as a reference for the next update
+    this.posXMousePointerPrevious = this.posXMousePointer;
+    /*
+
+     // If neither key are pressed
+     else {
+     // Stop the player
+     this.player.body.velocity.x = 0;
+     }
+     */
+
+
+  },
+
+  fireBullet: function (x, y) {
+
+    // Retrieve a bullet from the bullets group
+    var bullet = this.bulletH1Group.getFirstExists(false);
+    if (!bullet) {
+      var bullet = new bulletH1(this.game, 250, 250);
+      this.bulletH1Group.add(bullet);
+    }
+    // Init the bullet
+    bullet.resetBulletH1(x, y);
+
+  },
+
+  playerFire: function () {
+    var y = this.player.y - this.player.height / 2;
+    var x = this.player.x;
+    // Create one bullet
+    this.fireBullet(x, y);
+
+    // Play sound with small volume
+    //this.bulletSound.volume = 0.5;
+    //this.bulletSound.play();
+  },
+
+  generateEnemiesAndCountdown: function () {
+    this.game.countIteration++;
+
+    console.log('geac' + this.game.countIteration);
+
+    if(this.game.countIteration == 15) {
+      var EnemyBomber2 = new EnemyBomber(this.game, -60, 80);
+      this.game.add.existing(EnemyBomber2);
+      EnemyBomber2.name="EnemyBomber2";
+      EnemyBomber2.resetEnemyBomber(80);
+    }
+
 
   }
 
@@ -420,47 +443,47 @@ module.exports = Play;
 },{"../prefabs/EnemyBomber":2,"../prefabs/bulletH1":3,"../prefabs/bulletH1Group":4}],9:[function(require,module,exports){
 'use strict';
 function Preload() {
-    this.asset = null;
-    this.ready = false;
+  this.asset = null;
+  this.ready = false;
 }
 
 Preload.prototype = {
-    preload: function () {
+  preload: function () {
 
-        this.asset = this.add.sprite(this.width / 2, this.height / 2, 'preloader');
-        this.asset.anchor.setTo(0.5, 0.5);
+    this.asset = this.add.sprite(this.width / 2, this.height / 2, 'preloader');
+    this.asset.anchor.setTo(0.5, 0.5);
 
-        this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
-        this.load.setPreloadSprite(this.asset);
+    this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+    this.load.setPreloadSprite(this.asset);
 
-        // BitmapFont
-        this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
-        this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
+    // BitmapFont
+    this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
+    this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
 
-        // Images
-        this.game.load.image('pixel', 'assets/pixel.png');
-        this.game.load.image('bulletH1', 'assets/bullet-hero-1.png');
+    // Images
+    this.game.load.image('pixel', 'assets/pixel.png');
+    this.game.load.image('bulletH1', 'assets/bullet-hero-1.png');
 
-        // Spritesheets
-        this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
-        this.load.spritesheet('EnemyBomber', 'assets/enemy-bomber-1.png', 60, 40, 3);
+    // Spritesheets
+    this.load.spritesheet('hero', 'assets/hero-hitted-and-damaged.png', 40, 40, 12);
+    this.load.spritesheet('EnemyBomber', 'assets/enemy-bomber-1.png', 60, 40, 3);
 
-    },
-    create: function () {
-        this.asset.cropEnabled = false;
-    },
-    update: function () {
+  },
+  create: function () {
+    this.asset.cropEnabled = false;
+  },
+  update: function () {
 
-        if (!!this.ready) {
-            this.game.state.start('menu');
-        }
-
-    },
-    onLoadComplete: function () {
-
-        this.ready = true;
-
+    if (!!this.ready) {
+      this.game.state.start('menu');
     }
+
+  },
+  onLoadComplete: function () {
+
+    this.ready = true;
+
+  }
 };
 
 module.exports = Preload;

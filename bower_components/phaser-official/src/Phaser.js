@@ -1,17 +1,17 @@
 /* global Phaser:true */
 /**
-* @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2015 Photon Storm Ltd.
-* @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
-*/
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2015 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
 /**
-* @namespace Phaser
-*/
+ * @namespace Phaser
+ */
 var Phaser = Phaser || {
 
-	VERSION: '2.3.0',
-	GAMES: [],
+    VERSION: '2.3.0',
+    GAMES: [],
 
     AUTO: 0,
     CANVAS: 1,
@@ -54,7 +54,7 @@ var Phaser = Phaser || {
 
     /**
      * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
-     * 
+     *
      * @property {Object} blendModes
      * @property {Number} blendModes.NORMAL
      * @property {Number} blendModes.ADD
@@ -76,23 +76,23 @@ var Phaser = Phaser || {
      * @static
      */
     blendModes: {
-        NORMAL:0,
-        ADD:1,
-        MULTIPLY:2,
-        SCREEN:3,
-        OVERLAY:4,
-        DARKEN:5,
-        LIGHTEN:6,
-        COLOR_DODGE:7,
-        COLOR_BURN:8,
-        HARD_LIGHT:9,
-        SOFT_LIGHT:10,
-        DIFFERENCE:11,
-        EXCLUSION:12,
-        HUE:13,
-        SATURATION:14,
-        COLOR:15,
-        LUMINOSITY:16
+      NORMAL: 0,
+      ADD: 1,
+      MULTIPLY: 2,
+      SCREEN: 3,
+      OVERLAY: 4,
+      DARKEN: 5,
+      LIGHTEN: 6,
+      COLOR_DODGE: 7,
+      COLOR_BURN: 8,
+      HARD_LIGHT: 9,
+      SOFT_LIGHT: 10,
+      DIFFERENCE: 11,
+      EXCLUSION: 12,
+      HUE: 13,
+      SATURATION: 14,
+      COLOR: 15,
+      LUMINOSITY: 16
     },
 
     /**
@@ -108,9 +108,9 @@ var Phaser = Phaser || {
      * @static
      */
     scaleModes: {
-        DEFAULT:0,
-        LINEAR:0,
-        NEAREST:1
+      DEFAULT: 0,
+      LINEAR: 0,
+      NEAREST: 1
     }
 
-};
+  };
