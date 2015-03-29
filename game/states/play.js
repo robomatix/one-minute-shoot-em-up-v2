@@ -53,6 +53,7 @@ Play.prototype = {
     // Game variables
     this.totalDuration = 60;
     this.CountdownDisplay = this.totalDuration;
+    this.CountdownDisplayTxt = "Countdown:";
     this.game.countIteration = 0;
 
     this.posXMousePointerPrevious = Phaser.Math.roundTo(this.game.input.mousePointer.x);
@@ -65,6 +66,13 @@ Play.prototype = {
 
     this.gameTimer = this.game.time.events.loop(Phaser.Timer.SECOND * 1, this.generateEnemiesAndCountdown, this);
     this.gameTimer.timer.start();
+
+    /* Display countdown
+     ******************************************************/
+    var CountdownDisplayNumberToString = this.totalDuration.toString();
+    this.CountdownDisplayText = this.game.add.bitmapText(360, 2, 'fontCarrierCommand', this.CountdownDisplayTxt , 9);
+    this.CountdownDisplayNumber = this.game.add.bitmapText(470, 2, 'fontCarrierCommand', "xx" , 9); // Apparently, is not possible to directly display numbers...
+    this.CountdownDisplayNumber.setText(this.CountdownDisplay);
 
 
     /* Launch the first enemy Bomber
@@ -168,6 +176,22 @@ Play.prototype = {
       EnemyBomber2.name="EnemyBomber2";
       EnemyBomber2.resetEnemyBomber(80);
     }
+
+    this.countDown();
+
+
+  },
+  countDown: function () {
+
+    // Minus the countdown
+    this.CountdownDisplay--;
+
+    // Display the Countdown
+    this.CountdownDisplayToString = this.CountdownDisplay.toString();
+    if (this.CountdownDisplay < 10) {
+      this.CountdownDisplayToString = "0" + this.CountdownDisplayToString;
+    }
+    this.CountdownDisplayNumber.setText(this.CountdownDisplayToString);
 
 
   }

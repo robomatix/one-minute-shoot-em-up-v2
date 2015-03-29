@@ -16,6 +16,7 @@ Preload.prototype = {
     // BitmapFont
     this.load.bitmapFont('fontKubasta', 'assets/fonts/kubasta/font.png', 'assets/fonts/kubasta/font.fnt');
     this.load.bitmapFont('fontSilkscreen', 'assets/fonts/silkscreen/font.png', 'assets/fonts/silkscreen/font.fnt');
+    this.load.bitmapFont('fontCarrierCommand', 'assets/fonts/carrier_command/carrier_command.png', 'assets/fonts/carrier_command/carrier_command.xml');
 
     // Images
     this.game.load.image('pixel', 'assets/pixel.png');
