@@ -5,6 +5,8 @@ var EnemyBomber;
 EnemyBomber = function (game, x, y, frame) {
   Phaser.Sprite.call(this, game, x, y, 'EnemyBomber', frame);
 
+  this.anchor.setTo(0.5, 0.5);
+
   this.health = 1;
   this.alive = true;
 
@@ -29,9 +31,9 @@ EnemyBomber.prototype.update = function () {
     this.alive = false;
     this.kill();
     if(this.name == "EnemyBomber1"){
-      var resetEnemyBomberX = 15;
+      var resetEnemyBomberX = 30;
     }else{
-      resetEnemyBomberX = 80;
+      resetEnemyBomberX = 95;
     }
     this.resetEnemyBomber(resetEnemyBomberX);
   }
@@ -62,6 +64,8 @@ EnemyBomber.prototype.resetEnemyBomber = function (y) {
   this.health = 1;
   this.alive = true;
   this.exists = true;
+
+  this.dropBombTimer = this.game.time.now;
 
 }
 module.exports = EnemyBomber;

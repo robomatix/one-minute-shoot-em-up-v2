@@ -4,6 +4,7 @@
 var bulletH1Group = require('../prefabs/bulletH1Group');
 var bulletH1 = require('../prefabs/bulletH1');
 var EnemyBomber = require('../prefabs/EnemyBomber');
+var EnemyBomb1 = require('../prefabs/enemyBomb1');
 
 function Play() {
 }
@@ -41,6 +42,7 @@ Play.prototype = {
 
 
     // Create groups
+    this.bombsBomber1Group = new bulletH1Group(this.game);
     this.bulletH1Group = new bulletH1Group(this.game);
 
 
@@ -60,6 +62,12 @@ Play.prototype = {
     this.nextBullet = 0;
     this.timeBullet = 188;
 
+    // Bombs Variables
+    this.dropBombFactorMax = 100;
+    this.dropBombFactorRef = 98;
+    this.dropBombTimerDelta = 888; // Drop a bomb tested every dropBombTimerDelta ms...
+
+
 
     /* add a timer to generate enemies
      ******************************************************/
@@ -70,18 +78,18 @@ Play.prototype = {
     /* Display countdown
      ******************************************************/
     var CountdownDisplayNumberToString = this.totalDuration.toString();
-    this.CountdownDisplayText = this.game.add.bitmapText(360, 2, 'fontCarrierCommand', this.CountdownDisplayTxt , 9);
-    this.CountdownDisplayNumber = this.game.add.bitmapText(470, 2, 'fontCarrierCommand', "xx" , 9); // Apparently, is not possible to directly display numbers...
+    this.CountdownDisplayText = this.game.add.bitmapText(360, 2, 'fontCarrierCommand', this.CountdownDisplayTxt, 9);
+    this.CountdownDisplayNumber = this.game.add.bitmapText(470, 2, 'fontCarrierCommand', "xx", 9); // Apparently, is not possible to directly display numbers...
     this.CountdownDisplayNumber.setText(this.CountdownDisplay);
 
 
     /* Launch the first enemy Bomber
      *********************************************/
 
-    var EnemyBomber1 = new EnemyBomber(this.game, -60, 15);
-    this.game.add.existing(EnemyBomber1);
-    EnemyBomber1.name="EnemyBomber1";
-    EnemyBomber1.resetEnemyBomber(15);
+    this.EnemyBomber1 = new EnemyBomber(this.game, -60, 30);
+    this.game.add.existing(this.EnemyBomber1);
+    this.EnemyBomber1.name = "EnemyBomber1";
+    this.EnemyBomber1.resetEnemyBomber(30);
 
 
   },
@@ -99,6 +107,8 @@ Play.prototype = {
 
       this.playerFire();
     }
+
+    this.dropsBomb(this.EnemyBomber1);
 
 
   },
@@ -168,13 +178,13 @@ Play.prototype = {
   generateEnemiesAndCountdown: function () {
     this.game.countIteration++;
 
-    console.log('geac' + this.game.countIteration);
+    //console.log('geac' + this.game.countIteration);
 
-    if(this.game.countIteration == 15) {
-      var EnemyBomber2 = new EnemyBomber(this.game, -60, 80);
+    if (this.game.countIteration == 15) {
+      var EnemyBomber2 = new EnemyBomber(this.game, -60, 95);
       this.game.add.existing(EnemyBomber2);
-      EnemyBomber2.name="EnemyBomber2";
-      EnemyBomber2.resetEnemyBomber(80);
+      EnemyBomber2.name = "EnemyBomber2";
+      EnemyBomber2.resetEnemyBomber(95);
     }
 
     this.countDown();
@@ -194,8 +204,31 @@ Play.prototype = {
     this.CountdownDisplayNumber.setText(this.CountdownDisplayToString);
 
 
-  }
+  },
+  dropsBomb: function (EnemyBomber) {
 
-};
+    //  To avoid them being allowed to fire too fast we set a time limit
+    if (this.game.time.now > EnemyBomber.dropBombTimer) {
+      console.log('pouet');
+
+      // Determinate the dropBombFactor
+      var dropBombFactor = this.game.rnd.integerInRange(1, this.dropBombFactorMax);
+      if (dropBombFactor > this.dropBombFactorRef) {
+        //  Grab the first bullet we can from the pool
+        var enemyBomb = this.bombsBomber1Group.getFirstExists(false);
+        if (!enemyBomb) {
+          var enemyBomb = new EnemyBomb1(this.game, 250, 250);
+          this.bombsBomber1Group.add(enemyBomb);
+        }
+        // Init the bullet
+        enemyBomb.resetEnemyBomb1(EnemyBomber.x, EnemyBomber.y);
+        this.dropBombTimer = this.game.time.now + this.dropBombTimerDelta;
+      }
+    }
+
+  } //dropsBomb
+
+}
+;
 
 module.exports = Play;
